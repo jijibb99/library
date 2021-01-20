@@ -96,4 +96,41 @@ public class PolicyHandler{
         }
     }
 
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverSelfRentaled_(@Payload SelfRentaled selfRentaled){
+
+        if(selfRentaled.isMe()){
+            System.out.println("##### listener  : " + selfRentaled.toJson());
+
+            Optional<Book> bookOptional = bookRepository.findById(selfRentaled.getBookId());
+            Book book = bookOptional.get();
+
+            book.setId(selfRentaled.getBookId());
+            book.setMemberId(selfRentaled.getMemberId());
+            book.setRendtalId(selfRentaled.getId());
+
+            book.setBookStatus("rentaled");
+
+            bookRepository.save(book);
+        }
+    }
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverSelfReturned_(@Payload SelfReturned selfReturned){
+
+        if(selfReturned.isMe()){
+            System.out.println("##### listener  : " + selfReturned.toJson());
+
+            Optional<Book> bookOptional = bookRepository.findById(selfReturned.getBookId());
+            Book book = bookOptional.get();
+
+            book.setId(selfReturned.getBookId());
+            book.setMemberId(selfReturned.getMemberId());
+            book.setRendtalId(selfReturned.getId());
+
+            book.setBookStatus("returned");
+
+            bookRepository.save(book);
+        }
+    }
+
 }

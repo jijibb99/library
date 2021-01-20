@@ -14,6 +14,7 @@ public class Rental {
     private Long memberId;  // 사용자번호
     private Long bookId;    // 책번호
     private String reqState;//요청: "reserve", "cancel", "rental", "return"
+    private Long kioskId;
 
     @PostPersist
     public void onPostPersist(){
@@ -52,7 +53,35 @@ public class Rental {
             BeanUtils.copyProperties(this, returned);
             returned.publishAfterCommit();
             System.out.println("returned" + returned.toJson());
+        }  else if (this.reqState.equals("kioskreturn") ) {
+            KioskReturned kioskReturned = new KioskReturned();
+            BeanUtils.copyProperties(this, kioskReturned);
+            kioskReturned.publishAfterCommit();
         }
+
+
+
+        KioskRentaled kioskRentaled = new KioskRentaled();
+        BeanUtils.copyProperties(this, kioskRentaled);
+        kioskRentaled.publishAfterCommit();
+
+        //Following code causes dependency to external APIs
+        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+
+        library.external.Kiosk kiosk = new library.external.Kiosk();
+        // mappings goes here
+        kiosk.setId(this.id);
+        kiosk.setMemberId(this.memberId);
+        kiosk.setBookId(this.bookId);
+        kiosk.setBookStatus("kioskrental");
+        kiosk.setKioskNo(this.kioskId);
+
+        RentalApplication.applicationContext.getBean(library.external.KioskService.class)
+            .selfRental(kiosk);
+
+
+
+
     }
 
     public Long getId() {
@@ -82,6 +111,14 @@ public class Rental {
 
     public void setReqState(String reqState) {
         this.reqState = reqState;
+    }
+
+    public Long getKioskId() {
+        return kioskId;
+    }
+
+    public void setKioskId(Long kioskId) {
+        this.kioskId = kioskId;
     }
 
 }

@@ -24,7 +24,7 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: rental
+          group: kiosk
           destination: library
           contentType: application/json
         event-out:
@@ -36,31 +36,7 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 server:
-  port: 8081
-
-feign:
-  hystrix:
-    enabled: true
-
-# To set thread isolation to SEMAPHORE
-#hystrix:
-#  command:
-#    default:
-#      execution:
-#        isolation:
-#          strategy: SEMAPHORE
-
-hystrix:
-  command:
-    # 전역설정
-    default:
-      execution.isolation.thread.timeoutInMilliseconds: 610
-
-api:
-  payment:
-    url: http://localhost:8082
-  kiosk:
-    url: http://localhost:8085
+  port: 8085
 ---
 
 spring:
@@ -80,15 +56,9 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: rental
+          group: kiosk
           destination: library
           contentType: application/json
         event-out:
           destination: library
           contentType: application/json
-
-api:
-  payment:
-    url: http://payment:8080
-  kiosk:
-    url: http://kiosk:8080

@@ -23,7 +23,11 @@ spring:
         - id: book
           uri: http://localhost:8084
           predicates:
-            - Path=/books/** 
+            - Path=/books/**
+        - id: kiosk
+          uri: http://localhost:8085
+          predicates:
+            - Path=/kiosks/**,/reservationLists/**
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -58,7 +62,11 @@ spring:
         - id: book
           uri: http://book:8080
           predicates:
-            - Path=/books/** 
+            - Path=/books/**
+        - id: kiosk
+          uri: http://kiosk:8080
+          predicates:
+            - Path=/kiosks/**,/reservationLists/**
       globalcors:
         corsConfigurations:
           '[/**]':
